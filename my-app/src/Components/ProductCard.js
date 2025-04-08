@@ -7,9 +7,9 @@ import Button from "@mui/material/Button";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-export default function ProductCard() {
+export default function ProductCard(props) {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ minWidth: 300 }}>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -19,11 +19,10 @@ export default function ProductCard() {
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Lizard
+            {props.product.title}
           </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+            {props.product.description}
           </Typography>
         </CardContent>
       </CardActionArea>
