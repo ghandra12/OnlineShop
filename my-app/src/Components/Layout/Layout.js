@@ -17,12 +17,23 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import HomeIcon from "@mui/icons-material/Home";
 import { AppBar, Drawer, DrawerHeader } from "./LayoutStyles";
 import { Outlet, useNavigate } from "react-router-dom";
-
-const navItems = [
-  { navText: "Cart", navIcon: <ShoppingCartIcon />, route: "/cart" },
-  { navText: "Dashboard", navIcon: <HomeIcon />, route: "/" },
-];
+import { useCart } from "../CartProvider";
+import { Badge } from "@mui/material";
 const Layout = (props) => {
+  const { cart } = useCart();
+
+  const navItems = [
+    {
+      navText: "Cart",
+      navIcon: (
+        <Badge badgeContent={cart.length} color="secondary">
+          <ShoppingCartIcon />
+        </Badge>
+      ),
+      route: "/cart",
+    },
+    { navText: "Dashboard", navIcon: <HomeIcon />, route: "/" },
+  ];
   const theme = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);

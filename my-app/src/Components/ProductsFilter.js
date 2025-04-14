@@ -15,6 +15,7 @@ export default function ProductsFilter(props) {
       filterOptions={filterOptions}
       sx={{ width: 300 }}
       onChange={props.onFilterChange}
+      defaultValue={filterElements[0]}
       renderInput={(params) => <TextField {...params} label="Search product" />}
     />
   );
