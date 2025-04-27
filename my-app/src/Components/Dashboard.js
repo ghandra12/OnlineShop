@@ -1,28 +1,55 @@
 import { Box, Grid, Modal, Typography } from "@mui/material";
 import ProductCard from "./ProductCard";
 import ProductsFilter from "./ProductsFilter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
-import { useCart } from "./CartProvider"; // 🆕
+import { useCart } from "./CartProvider";
+import ProductsSearch from "./ProductsSearch";
+import { debounce } from "lodash";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [filter, setFilter] = useState(0);
+  const [searchInput, setSearchInput] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [openCart, setOpenCart] = useState(false);
-  const { cart, addToCart } = useCart(); // 🆕
+  const { cart, addToCart } = useCart();
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: `https://localhost:7149/Product?category=${filter}`,
-    })
+    const url = `https://localhost:7149/Product?filter=${filter}&search=${searchInput}`;
+    axios
+      .get(url)
       .then((resp) => {
         setProducts(resp.data);
       })
       .catch((error) => {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching filtered products:", error);
       });
-  }, [filter]);
+  }, [filter, searchInput]);
+
+  // debounce the setSearchInput + fetch suggestions
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchInput(value);
+
+      if (value.trim() === "") {
+        setSuggestions([]);
+        return;
+      }
+
+      axios
+        .get(
+          `https://localhost:7149/Product/Suggestions?search=${value}&filter=${filter}`
+        )
+        .then((res) => setSuggestions(res.data))
+        .catch((err) => console.error("Error fetching suggestions", err));
+    }, 300),
+    []
+  );
+
+  const onSetSearch = (value) => {
+    debouncedSearch(value);
+  };
 
   const onFilterChange = (event, newValue) => {
     if (newValue) {
@@ -31,12 +58,24 @@ const Dashboard = () => {
   };
 
   const handleBuy = (product) => {
-    addToCart(product); // 🆕 use context method
+    addToCart(product);
   };
 
   return (
     <Box>
-      <ProductsFilter onFilterChange={onFilterChange} />
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <ProductsFilter onFilterChange={onFilterChange} />
+        </Grid>
+        <Grid item xs={12}>
+          <ProductsSearch
+            setSearchInput={onSetSearch}
+            searchInput={searchInput}
+            suggestions={suggestions}
+          />
+        </Grid>
+      </Grid>
+
       <Box marginBottom={4} />
 
       <Grid container spacing={2}>
