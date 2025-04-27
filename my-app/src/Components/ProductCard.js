@@ -85,7 +85,7 @@ export default function ProductCard(props) {
       <Chip
         icon={<AttachMoneyIcon />}
         label={formattedPrice}
-        color="primary"
+        color="secondary"
         sx={{
           position: "absolute",
           top: 10,
